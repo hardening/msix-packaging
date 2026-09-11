@@ -44,13 +44,14 @@
     #define interface struct
     #endif
 
-    // Likewise, these two are COM/URLMon types (from objidl.h/urlmon.h) that AppxPackaging.hpp's
-    // portable declarations reference but never actually use meaningfully - same stub as the
-    // non-WIN32 branch below uses.
-    #ifndef LPOLESTR
-    #define LPOLESTR void*
-    #endif
+    // LPOLESTR is a real mingw type (wtypesbase.h, pulled in here rather than macro-stubbed:
+    // AppxPackaging.hpp needs it very early, well before this codebase's own later, explicit
+    // #include "objidl.h" - and #define-ing it to void* here would corrupt wtypesbase.h's own
+    // "typedef OLECHAR *LPOLESTR;" once that explicit include is reached later on).
+    #include <wtypesbase.h>
 
+    // IUri, unlike LPOLESTR, isn't available without pulling in urlmon.h, so keep stubbing it -
+    // AppxPackaging.hpp's portable declarations reference it but never use it meaningfully.
     #ifndef IUri
     #define IUri void*
     #endif
