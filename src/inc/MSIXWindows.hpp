@@ -43,6 +43,17 @@
     #ifndef interface
     #define interface struct
     #endif
+
+    // Likewise, these two are COM/URLMon types (from objidl.h/urlmon.h) that AppxPackaging.hpp's
+    // portable declarations reference but never actually use meaningfully - same stub as the
+    // non-WIN32 branch below uses.
+    #ifndef LPOLESTR
+    #define LPOLESTR void*
+    #endif
+
+    #ifndef IUri
+    #define IUri void*
+    #endif
     #endif
 #else
     // On x86-x64 non-win32 platforms, use SYSTEM V AMD64 ABI calling convention.  This should suffice for Solaris, Linux, BSD,
