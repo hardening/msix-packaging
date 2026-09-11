@@ -34,6 +34,16 @@
     // Windows.h defines max and min, which does NOT play nice at all with std::min / std::max usage from <algorithm>
     #undef max
     #undef min
+
+    #ifndef _MSC_VER
+    // AppxPackaging.hpp's portable interface declarations (used here too - see there) need the
+    // "interface" macro. On MSVC it comes for free from the real Windows SDK headers pulled in
+    // by <unknwn.h>/<objidl.h>, but here those are only reached later on, well after
+    // AppxPackaging.hpp's own forward declarations already need it.
+    #ifndef interface
+    #define interface struct
+    #endif
+    #endif
 #else
     // On x86-x64 non-win32 platforms, use SYSTEM V AMD64 ABI calling convention.  This should suffice for Solaris, Linux, BSD,
     // MacOS and anything compiled with GCC or Intel compilers.  On non-x86-x64 architecures, we will use the compiler default
