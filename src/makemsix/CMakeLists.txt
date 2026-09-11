@@ -24,3 +24,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${MSIX_BINARY_ROOT}/src/msix)
 
 add_dependencies(${PROJECT_NAME} msix)
 target_link_libraries(${PROJECT_NAME} msix)
+
+# See the comment on the msix target's own install() in src/msix/CMakeLists.txt: upstream never
+# added install() rules for either target.
+install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)

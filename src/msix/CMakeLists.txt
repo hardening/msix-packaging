@@ -386,3 +386,14 @@ if(OpenSSL_FOUND)
         target_link_libraries(${PROJECT_NAME} PRIVATE crypto)
     endif()
 endif()
+
+# Upstream never added install() rules for this target at all (its own distribution path is the
+# Package.nuspec/nuget flow set up earlier in the top-level CMakeLists.txt, not `cmake --install`),
+# so a plain `cmake --install` silently installs nothing. RUNTIME is the .dll on Windows, LIBRARY
+# the .so on Linux/macOS, ARCHIVE the Windows .lib import library (also where a static lib would land).
+install(TARGETS ${PROJECT_NAME}
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    PUBLIC_HEADER DESTINATION include
+)
