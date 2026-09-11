@@ -288,10 +288,12 @@ elseif((AOSP) AND (NOT USE_MSIX_SDK_ZLIB))
     find_package(ZLIB REQUIRED)
     target_link_libraries(${PROJECT_NAME} PRIVATE -lz)
 else() # WIN32 or USE_MSIX_SDK_ZLIB
-    target_include_directories(${PROJECT_NAME} PRIVATE 
-            ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/zlib
-            ${MSIX_PROJECT_ROOT}/lib/zlib
-        )
+    if(NOT USE_SYSTEM_ZLIB)
+        target_include_directories(${PROJECT_NAME} PRIVATE
+                ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/zlib
+                ${MSIX_PROJECT_ROOT}/lib/zlib
+            )
+    endif()
     if(USE_SHARED_ZLIB)
         message(STATUS "MSIX takes a dynamic dependency on zlib")
         target_link_libraries(${PROJECT_NAME} PRIVATE zlib)

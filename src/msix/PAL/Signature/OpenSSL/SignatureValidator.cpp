@@ -95,8 +95,15 @@ namespace MSIX
         for (int i = 0; i < sk_X509_num(certStack); i++)
         {
             X509* cert = sk_X509_value(certStack, i);
+            // X509/X509_EXTENSION became opaque types in OpenSSL 1.1: the vendored copy under
+            // lib/openssl is 1.0.2 (transparent structs), while USE_SYSTEM_OPENSSL links against
+            // whatever the system ships (1.1+/3.x), so support both.
+#if OPENSSL_VERSION_NUMBER >= 0x10100000L
+            const STACK_OF(X509_EXTENSION) *exts = X509_get0_extensions(cert);
+#else
             STACK_OF(X509_EXTENSION) *exts = cert->cert_info->extensions;
-            for (int i = 0; i < sk_X509_EXTENSION_num(exts); i++) 
+#endif
+            for (int i = 0; i < sk_X509_EXTENSION_num(exts); i++)
             {
                 X509_EXTENSION *ext = sk_X509_EXTENSION_value(exts, i);
                 if (ext)
@@ -104,9 +111,14 @@ namespace MSIX
                     if (X509_EXTENSION_get_object(ext))
                     {
                         unique_BIO extbio(BIO_new(BIO_s_mem()));
-                        if (!X509V3_EXT_print(extbio.get(), ext, 0, 0)) 
+                        if (!X509V3_EXT_print(extbio.get(), ext, 0, 0))
                         {
+#if OPENSSL_VERSION_NUMBER >= 0x10100000L
+                            // ASN1_STRING_print instead of the removed M_ASN1_OCTET_STRING_print macro
+                            ASN1_STRING_print(extbio.get(), X509_EXTENSION_get_data(ext));
+#else
                             M_ASN1_OCTET_STRING_print(extbio.get(), ext->value);
+#endif
                         }
                         // null terminate the string.
                         BIO_write(extbio.get(), "", 1);
@@ -207,8 +219,10 @@ namespace MSIX
         // If we encounter an expired cert error (which is fine) or a critical extension (most MS
         // certs contain MS-specific extensions that OpenSSL doesn't know how to evaluate), 
         // just return success
-        if (!ok && (ctx->error == X509_V_ERR_CERT_HAS_EXPIRED || 
-                    ctx->error == X509_V_ERR_UNHANDLED_CRITICAL_EXTENSION))
+        // X509_STORE_CTX is opaque since OpenSSL 1.1: use the accessor instead of ctx->error
+        int ctxError = X509_STORE_CTX_get_error(ctx);
+        if (!ok && (ctxError == X509_V_ERR_CERT_HAS_EXPIRED ||
+                    ctxError == X509_V_ERR_UNHANDLED_CRITICAL_EXTENSION))
         {
             ok = static_cast<int>(true);
         }

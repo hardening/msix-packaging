@@ -140,8 +140,11 @@
     typedef int BOOL;
     #endif
 
-    #ifndef _SIZE_T_DEFINED
-    #define _SIZE_T_DEFINED
+    // Note: intentionally not guarded by the standard _SIZE_T_DEFINED name: GCC's own
+    // <stddef.h> already #defines that macro as a side effect of defining size_t, which
+    // would silently skip this typedef and leave SIZE_T undeclared everywhere below.
+    #ifndef _MSIX_SIZE_T_DEFINED
+    #define _MSIX_SIZE_T_DEFINED
     typedef size_t SIZE_T;
     #endif
 
