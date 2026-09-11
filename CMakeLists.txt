@@ -86,6 +86,16 @@ add_definitions(-DSDK_VERSION="${MSIX_VERSION}")
 # Validates CMake options.
 include(msix_options)
 
+# The codebase's own portability headers (MSIXWindows.hpp and friends) branch on the compiler's
+# bare "WIN32" macro, not "_WIN32". MSVC never predefines that one at all (only "_WIN32"); GNU
+# toolchains (including mingw) do predefine it, but only in GNU-extensions mode, since it's a
+# non-reserved identifier that strict ISO conformance mode strips - and this project requests
+# strict mode (CMAKE_CXX_EXTENSIONS OFF, so CMake passes "-std=c++14" rather than "-std=gnu++14").
+# Define it explicitly rather than depending on toolchain/standard-mode specifics either way.
+if(WIN32)
+    add_definitions(-DWIN32)
+endif()
+
 # Configure Package.nuspec
 if(WIN32)
     set(MSIX_NUGET_NAME "Microsoft.MSIX.Packaging.Windows")
