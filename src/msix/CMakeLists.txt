@@ -238,7 +238,11 @@ configure_file(../inc/MsixErrors.hpp ${CMAKE_CURRENT_BINARY_DIR}/MsixErrors.hpp)
 # Include MSIX headers
 target_include_directories(${PROJECT_NAME} PRIVATE ${MSIX_PROJECT_ROOT}/src/inc)
 
-if(WIN32)
+if(MSVC)
+    # These are all MSVC-specific compiler/linker flags (cl.exe-style "/" options, delay-loading,
+    # LTCG, a .def-based export list, .lib names that don't exist under mingw); guarded on MSVC
+    # rather than WIN32 so a mingw cross-compile (also WIN32, but a GNU toolchain) doesn't choke
+    # on a compile line mixing "/source-charset:utf-8" style flags with GCC's own "-c"/"-o".
     string(REPLACE "/GR" " " CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
     if(CMAKE_BUILD_TYPE MATCHES Debug)
         set_target_properties(${PROJECT_NAME} PROPERTIES
