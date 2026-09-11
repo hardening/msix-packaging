@@ -14,6 +14,7 @@ option(USE_STATIC_MSVC "Windows only. Pass /MT as a compiler flag to use the sta
 option(SKIP_BUNDLES "Removes bundle functionality from the MSIX SDK. Default is 'off'" OFF)
 option(MSIX_PACK "Include packaging features for the MSIX SDK. Not supported for mobile. Default is 'off'" OFF)
 option(USE_MSIX_SDK_ZLIB "Use zlib implementation under lib/zlib. If off, uses inbox compression library. For Windows and Linux this is no-opt." OFF)
+option(USE_SYSTEM_XERCES "Link against the system-installed Xerces-C++ library (found via pkg-config) instead of building the vendored copy under lib/xerces. Only meaningful when XML_PARSER is xerces." OFF)
 
 set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel. Use the -DCMAKE_BUILD_TYPE=[option] to specify.")
 set(XML_PARSER "" CACHE STRING "Choose the type of parser, options are: [xerces, msxml6, javaxml].  Use the -DXML_PARSER=[option] to specify.")

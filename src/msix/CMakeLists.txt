@@ -303,10 +303,12 @@ endif()
 
 # Parser
 if(XML_PARSER MATCHES xerces)
-    target_include_directories(${PROJECT_NAME} PRIVATE
-        ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/xerces/src
-        ${MSIX_PROJECT_ROOT}/lib/xerces/src
-    )
+    if(NOT USE_SYSTEM_XERCES)
+        target_include_directories(${PROJECT_NAME} PRIVATE
+            ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/xerces/src
+            ${MSIX_PROJECT_ROOT}/lib/xerces/src
+        )
+    endif()
     target_link_libraries(${PROJECT_NAME} PRIVATE xerces-c)
 endif()
 

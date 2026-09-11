@@ -24,13 +24,18 @@ struct UuidOfImpl
 };
 
 #ifndef MSIX_INTERFACE
+// MSIX_INTERFACE is also invoked from inside extern "C" blocks (see below), where a template
+// specialization would have C language linkage. Clang tolerates that, GCC rejects it with
+// "template specialization with C linkage", so force C++ linkage back on for the specialization.
 #define MSIX_INTERFACE(name,l,w1,w2,b1,b2,b3,b4,b5,b6,b7,b8) \
     static constexpr const IID IID_##name  = {l,w1,w2,{b1,b2,b3,b4,b5,b6,b7,b8}}; \
+    extern "C++" {                                                                \
     template<>                                                                    \
     struct UuidOfImpl<name>                                                       \
     {                                                                             \
         static constexpr const IID& iid = IID_##name;                             \
-    };
+    };                                                                            \
+    }
 #endif // MSIX_INTERFACE
 
 #ifdef WIN32
