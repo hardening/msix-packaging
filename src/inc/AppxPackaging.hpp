@@ -38,7 +38,10 @@ struct UuidOfImpl
     }
 #endif // MSIX_INTERFACE
 
-#ifdef WIN32
+// AppxPackaging.h is a real Windows SDK header (WinRT-generated), which only MSVC has access
+// to - a mingw cross-compile is WIN32 too, but needs the portable interface declarations below
+// just like Linux/macOS/Android do.
+#if defined(WIN32) && defined(_MSC_VER)
 #include <AppxPackaging.h>
 
 // This interfaces already have an IID_I* for windows. We still need its UuidOfImpl specialization
