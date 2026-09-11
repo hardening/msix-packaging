@@ -22,6 +22,14 @@
 
     #define UNICODE
     #define NOMINMAX
+    #ifndef _MSC_VER
+    // mingw-w64's <shellapi.h>/<combaseapi.h> (pulled in by the non-lean <windows.h>) rely on
+    // SHSTDAPI/STDAPI-family macros being defined in an order that doesn't hold up in this
+    // codebase's particular include graph, and none of that (Shell, WinSock, RPC, MM, ...) is
+    // needed here anyway - the COM interfaces actually used are pulled in explicitly below
+    // (unknwn.h/objidl.h) wherever needed.
+    #define WIN32_LEAN_AND_MEAN
+    #endif
     #include <windows.h>
     // Windows.h defines max and min, which does NOT play nice at all with std::min / std::max usage from <algorithm>
     #undef max
