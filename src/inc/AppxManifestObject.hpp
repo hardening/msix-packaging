@@ -22,8 +22,8 @@
 #ifndef WIN32
 interface IAppxManifestObject : public IUnknown
 #else
-#include "Unknwn.h"
-#include "Objidl.h"
+#include "unknwn.h"
+#include "objidl.h"
 class IAppxManifestObject : public IUnknown
 #endif
 {
